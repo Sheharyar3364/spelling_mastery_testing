@@ -18,6 +18,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+print("BASE DIR", BASE_DIR)
 
 from datetime import timedelta
 
@@ -204,13 +205,15 @@ AUTH_USER_MODEL = "users.User"
 # SpellMaster/settings.py
 
 import os
+# settings.py
+
 import nltk
 
-# Add custom NLTK data path
-nltk.data.path.append(os.path.join(BASE_DIR, 'nltk_data'))
+# Define the NLTK data path
+NLTK_DATA_PATH = os.path.join(BASE_DIR, 'nltk_data')
 
-
-
+# Append the new path to NLTK's data path
+nltk.data.path.append(NLTK_DATA_PATH)
 
 
 CORS_ORIGIN_ALLOW_ALL = False  # Set to True if you want to allow all origins

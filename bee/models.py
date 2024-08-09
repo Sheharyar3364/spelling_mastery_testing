@@ -4,6 +4,7 @@ from nltk.corpus import brown, gutenberg, reuters, webtext, inaugural, state_uni
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 
+
 class Puzzle(models.Model):
     characters = models.CharField(max_length=6, unique=True)
     central_letter = models.CharField(max_length=1)
