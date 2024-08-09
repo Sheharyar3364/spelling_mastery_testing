@@ -1,1 +1,1 @@
-# spelling_mastery_testing
+# spelling-mastery
