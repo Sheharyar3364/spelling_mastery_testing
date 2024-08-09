@@ -64,11 +64,11 @@ class Puzzle(models.Model):
     def get_valid_words(self):
         combined_words = (
             set(brown.words()) |
-            set(gutenberg.words()) |
-            set(reuters.words()) |
-            set(webtext.words()) |
-            set(inaugural.words()) |
-            set(state_union.words())
+            set(gutenberg.words()) 
+            # set(reuters.words()) |
+            # set(webtext.words()) |
+            # set(inaugural.words()) |
+            # set(state_union.words())
         )
 
         def is_valid_word(word):
