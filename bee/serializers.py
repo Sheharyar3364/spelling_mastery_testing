@@ -9,6 +9,8 @@ class PuzzleSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    words = serializers.JSONField()  # Specify that words is a JSON field
+
     class Meta:
         model = Answer
-        fields = '__all__'
+        fields = '__all__'  # Include all fields, including 'words'

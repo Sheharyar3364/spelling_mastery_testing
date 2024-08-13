@@ -1,7 +1,6 @@
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
 
-from users.models import Note
 from users.models import User
 
 class UserRegistrationSerializer(ModelSerializer):
@@ -25,8 +24,3 @@ class UserRegistrationSerializer(ModelSerializer):
     def create(self, validate_data):
         return User.objects.create_user(**validate_data)
 
-
-class NoteSerializer(ModelSerializer):
-    class Meta:
-        model = Note
-        fields = "__all__"

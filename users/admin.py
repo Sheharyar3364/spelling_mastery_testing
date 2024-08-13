@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Note
 from users.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
@@ -34,5 +33,4 @@ class UserModelAdmin(BaseUserAdmin):
 
 
 # Register your models here.
-admin.site.register(Note)
 admin.site.register(User, UserModelAdmin)

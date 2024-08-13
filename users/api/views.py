@@ -4,14 +4,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
-from users.models import Note
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from users.models import User
 
 
-from .serializers import NoteSerializer, UserRegistrationSerializer
+from .serializers import UserRegistrationSerializer
 
 
 class UserRegistrationView(APIView):
@@ -40,15 +39,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
-@api_view(['GET'])
-def getRoutes(request):
-    routes = [
-        '/api/token',
-        '/api/refresh'
-    ]
-
-    return Response(routes)
 
 
 class CustomDataView(APIView): 
@@ -84,12 +74,4 @@ class UpdateLevelView(APIView):
         user.save()  # Save the user's updated level to the database
         return Response({"level": user.level}, status=status.HTTP_200_OK)
 
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def getNotes(request):
-    user = request.user
-    notes = user.note_set.all()
-    serializer = NoteSerializer(notes, many=True)
-    return Response(serializer.data)
 
