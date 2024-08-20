@@ -7,6 +7,8 @@ import nltk
 from nltk.corpus import brown, gutenberg, reuters, webtext, inaugural, state_union, cmudict
 from rest_framework.decorators import action
 from django.utils import timezone
+from django.db import transaction
+
 
 
 
@@ -19,15 +21,36 @@ class PuzzleView(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], url_path='unplayed_puzzle')
     def unplayed(self, request):
         user = request.user
-        played_puzzles = UserGame.objects.filter(user=user).values_list('puzzle_id', flat=True)
-        unplayed_puzzles = self.queryset.exclude(id__in=played_puzzles)
 
-        # Get the first unplayed puzzle
-        first_unplayed_puzzle = unplayed_puzzles.first()  # This returns None if there are no unplayed puzzles
+        # Bulk create UserGame instances for puzzles that don't have a UserGame record for this user
+        puzzles_without_usergame = Puzzle.objects.exclude(
+            id__in=UserGame.objects.filter(user=user).values_list('puzzle_id', flat=True)
+        )
 
-        if first_unplayed_puzzle is not None:
-            serializer = self.get_serializer(first_unplayed_puzzle)
-            return Response(serializer.data)
+        usergames_to_create = [
+            UserGame(user=user, puzzle=puzzle, status=0) for puzzle in puzzles_without_usergame
+        ]
+
+        # Use a transaction to ensure atomicity
+        with transaction.atomic():
+            UserGame.objects.bulk_create(usergames_to_create)
+
+        # Filter UserGames for unplayed puzzles (status=0)
+        unplayed_usergames = UserGame.objects.filter(user=user, status=0)
+
+        if unplayed_usergames.exists():
+            # Get the first unplayed puzzle
+            first_unplayed_usergame = unplayed_usergames.first()
+            puzzle = first_unplayed_usergame.puzzle
+
+            # Serialize and return the puzzle data
+            serializer = self.get_serializer(puzzle)
+
+            # Include the id of the first_unplayed_usergame in the response data
+            response_data = serializer.data
+            response_data['user_game_id'] = first_unplayed_usergame.id
+
+            return Response(response_data)
         else:
             return Response({'message': 'No unplayed puzzles available'}, status=404)
 
@@ -122,7 +145,7 @@ class UserGameView(viewsets.ModelViewSet):
         return Response({"user_game_id": user_game.id}, status=201)
     
 
-    @action(detail=False, methods=['post'], url_path='complete_puzzle')  # Use underscore in url_path
+    @action(detail=False, methods=['post'], url_path='complete_puzzle')  
     def complete_puzzle(self, request):
         user_game_id = request.data.get("gameid")
         user_game = UserGame.objects.get(pk=user_game_id)
@@ -132,3 +155,14 @@ class UserGameView(viewsets.ModelViewSet):
         user_game.save()
 
         return Response({"detail": "Puzzle completed successfully."}, status=200)
+    
+    
+    @action(detail=False, methods=['post'], url_path='skip_puzzle')  
+    def skip_puzzle(self, request):
+        user_game_id = request.data.get("gameid")
+        game_status = request.data.get("status")
+
+        # Update the status directly without fetching the object
+        UserGame.objects.filter(pk=user_game_id).update(status=game_status)
+
+        return Response({"detail": "Puzzle skipped successfully."}, status=200)

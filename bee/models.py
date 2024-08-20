@@ -103,7 +103,7 @@ class UserGame(models.Model):
     start_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
     play_time = models.DurationField(null=True, blank=True)  # Store playtime as a duration
-    status = models.IntegerField(default=0)
+    status = models.IntegerField(default=0, db_index=True)
 
     # def calculate_play_time(self):
     #         self.play_time = self.end_time - self.start_time

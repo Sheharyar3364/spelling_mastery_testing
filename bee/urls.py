@@ -15,6 +15,8 @@ urlpatterns = [
     path('answer/by-puzzle/<int:puzzle_id>/', views.AnswerView.as_view({'get': 'by_puzzle'}), name='answer-by-puzzle'),
     path('start_game/', views.UserGameView.as_view({'post': 'start_game'}), name='start-game'),
     path('complete_puzzle/', views.UserGameView.as_view({'post': 'complete_puzzle'}), name='complete-puzzle'),
+    path('skip_puzzle/', views.UserGameView.as_view({'post': 'skip_puzzle'}), name='skip-puzzle'),
+
 ]
 
 # {"refresh":
