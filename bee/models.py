@@ -104,6 +104,7 @@ class UserGame(models.Model):
     end_time = models.DateTimeField(null=True, blank=True)
     play_time = models.DurationField(null=True, blank=True)  # Store playtime as a duration
     status = models.IntegerField(default=0, db_index=True)
+    foundWords = models.JSONField(default=list)
 
     # def calculate_play_time(self):
     #         self.play_time = self.end_time - self.start_time

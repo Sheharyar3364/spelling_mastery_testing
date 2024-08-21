@@ -8,8 +8,9 @@ from nltk.corpus import brown, gutenberg, reuters, webtext, inaugural, state_uni
 from rest_framework.decorators import action
 from django.utils import timezone
 from django.db import transaction
+import logging
 
-
+logger = logging.getLogger(__name__)
 
 
 class PuzzleView(viewsets.ModelViewSet):
@@ -143,6 +144,29 @@ class UserGameView(viewsets.ModelViewSet):
         )
 
         return Response({"user_game_id": user_game.id}, status=201)
+    
+    @action(detail=False, methods=['post'], url_path='add_word')
+    def add_word(self, request):
+        user_game_id = request.data.get("gameid")
+        word = request.data.get("word")
+
+        user_game = UserGame.objects.get(pk=user_game_id)
+        
+        # Append the word to the foundWords list
+        user_game.foundWords.append(word)
+        user_game.save()
+
+        return Response({"detail": "Word added successfully."}, status=200)
+    
+
+    
+    def fetch_found_words(self, request, gameid=None):
+        try:
+            user_game = UserGame.objects.get(pk=gameid)
+            found_words = user_game.foundWords
+            return Response(found_words, status=200)
+        except UserGame.DoesNotExist:
+            return Response({"detail": "UserGame not found."}, status=404)
     
 
     @action(detail=False, methods=['post'], url_path='complete_puzzle')  

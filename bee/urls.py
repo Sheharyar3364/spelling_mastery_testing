@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 from . import views
+from .views import UserGameView
 
 router = routers.DefaultRouter()
 router.register('puzzle', views.PuzzleView)
@@ -16,9 +17,6 @@ urlpatterns = [
     path('start_game/', views.UserGameView.as_view({'post': 'start_game'}), name='start-game'),
     path('complete_puzzle/', views.UserGameView.as_view({'post': 'complete_puzzle'}), name='complete-puzzle'),
     path('skip_puzzle/', views.UserGameView.as_view({'post': 'skip_puzzle'}), name='skip-puzzle'),
-
+    path('add_word/', views.UserGameView.as_view({'post': 'add_word'}), name='add-word'),
+    path('fetch_found_words/<int:gameid>/', UserGameView.as_view({'get': 'fetch_found_words'}), name='fetch-found-words'),
 ]
-
-# {"refresh":
-#  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTczMTMyMDMyMCwiaWF0IjoxNzIzNTQ0MzIwLCJqdGkiOiIzNzY3OTBjYzY0ZTY0ZGNkYTQ0MjM2YmE5MTI4NTYwNiIsInVzZXJfaWQiOjMsImVtYWlsIjoic2hlaGFyeWFyQGdtYWlsLmNvbSIsIm5hbWUiOiJTaGVoYXJ5YXIiLCJsZXZlbCI6Mn0.jX0jT7iJE_LYbkajydiBbeoG5k5e-_IX2DYKqF21EjU",
-#  "access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIzNTQ3OTIwLCJpYXQiOjE3MjM1NDQzMjAsImp0aSI6IjZiYjIyMmU2N2YyNDQyNThhNTVhYjlmOWY0Y2NjMDdhIiwidXNlcl9pZCI6MywiZW1haWwiOiJzaGVoYXJ5YXJAZ21haWwuY29tIiwibmFtZSI6IlNoZWhhcnlhciIsImxldmVsIjoyfQ.Tm94yYBwMiHbEKvh3OYX3sMGZkBvzUsvZxDsncLopms"}
