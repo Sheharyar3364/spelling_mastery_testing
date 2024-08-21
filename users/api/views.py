@@ -7,18 +7,33 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from users.models import User
 
 
 from .serializers import UserRegistrationSerializer
 
+# Generating token manually
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    # Add custom claims
+    refresh['email'] = user.email
+    refresh['name'] =  user.name  
+    refresh['level'] = user.level  
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 class UserRegistrationView(APIView):
     def post(self, request, format=None):
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.save()
-            return Response({"msg": "Registration Succesful!"}, status=status.HTTP_201_CREATED)
+            token = get_tokens_for_user(user)
+            return Response({"token": token, "msg": "Registration Succesful!"}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
